@@ -5,7 +5,7 @@
         <div class="me-confirm-title">{{title}}</div>
         <div class="me-confirm-msg">{{msg}}</div>
         <div class="me-confirm-btn-container">
-          <div class="me-confirm-btn me-confirm-cancel" @click="cancel">{{cancelBtnText}}</div>
+          <div class="me-confirm-btn me-confirm-cancel" v-if="showCancel" @click="cancel">{{cancelBtnText}}</div>
           <div class="me-confirm-btn me-confirm-ok" @click="confirm">{{confirmBtnText}}</div>
         </div>
       </div>
@@ -33,6 +33,10 @@
       confirmBtnText: {
         type: String,
         default: '确定'
+      },
+      showCancel: {
+        type: Boolean,
+        default: true
       }
     },
     data(){

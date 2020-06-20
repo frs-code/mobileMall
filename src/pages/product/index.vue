@@ -6,7 +6,8 @@
       <addr :count="product.count"></addr>
       <version></version>
     </div>
-    <bottom class="bottom" :product="product"></bottom>
+    <bottom class="bottom" ref="bottom" @existed="tips" :product="product" @showConfirm="showConfirm"></bottom>
+    <me-confirm ref="confirm" :title="title" msg="" :showCancel="showCancel" @confirm="add"></me-confirm>
   </div>
 </template>
 
@@ -16,6 +17,7 @@
   import Detail from './detail';
   import Version from "./version";
   import Bottom from "./bottom";
+  import MeConfirm from '@/base/confirm';
   export default {
     name: 'Product',
     components: {
@@ -23,14 +25,28 @@
       Version,
       Addr,
       ProductHeader,
-      Bottom
+      Bottom,
+      MeConfirm
     },
     data(){
       return{
-        product: {}
+        product: {},
+        title:'添加到购物车',
+        showCancel: true
       }
     },
     methods:{
+      add(){
+        this.$refs.bottom && this.$refs.bottom. addCart();
+      },
+      showConfirm(){
+        this.$refs.confirm && this.$refs.confirm.show();
+      },
+      tips(){
+        this.title = '购物车已存在该商品';
+        this.showCancel = false
+        this.$refs.confirm && this.$refs.confirm.show();
+      }
 
     },
     created(){

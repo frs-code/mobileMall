@@ -9,7 +9,7 @@
         <span>客服</span>
       </div>
       <div class="cart">
-        <div class="addCart btn" @click="addCart">加入购物车</div>
+        <div class="addCart btn" @click="showConfirm">加入购物车</div>
         <div class="buy btn">立即购买</div>
       </div>
     </div>
@@ -21,7 +21,8 @@
     name: "bottom",
     data(){
       return{
-        cartArr: []
+        cartArr: [],
+        flag: true
       }
     },
     props:{
@@ -31,27 +32,39 @@
     },
     methods:{
       addCart(){
-        let flag = true;
+        if(this.flag){
+          this.cartArr.push(this.product);
+        }
+        storage.set('cart',this.cartArr);
+        this.judge();
+      },
+      showConfirm(){
+        if(this.flag){
+          this.$emit('showConfirm');
+        }else{
+          this.$emit('existed');
+        }
+      },
+      judge(){
         if(this.cartArr.length > 0){
           for(let i in this.cartArr){
             if(this.cartArr[i] != null){
               if(this.product.id === this.cartArr[i].id){
                 //有相同的产品，不重复添加到购物车
-                flag = false;
+                this.flag = false;
               }
             }
           }
+        }else{
+          this.flag = true;
         }
-        if(flag){
-          this.cartArr.push(this.product);
-        }
-        storage.set('cart',this.cartArr);
       }
     },
     created(){
       if(storage.get('cart')){
         this.cartArr = storage.get('cart');
       }
+      this.judge();
     }
   }
 </script>

@@ -2,9 +2,9 @@
   <div id="app" class="g-container">
     <div class="g-view-container">
 <!--      keep-alive让路由能被缓存-->
-<!--      <keep-alive>-->
+      <keep-alive exclude="Cart">
         <router-view></router-view>
-<!--      </keep-alive>-->
+      </keep-alive>
     </div>
     <div class="g-footer-container">
       <c-tabbar></c-tabbar>

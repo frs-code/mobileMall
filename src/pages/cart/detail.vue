@@ -13,7 +13,7 @@
             <div class="cart-count">
               <div class="cart-price">￥{{item.price}}</div>
               <div class="cart-numberControl">
-                <div class="cart-btn" @click="delNum(item,index)">-</div>
+                <div class="cart-btn" @click="subNum(item,index)">-</div>
                 <input type="text" ref="number" v-model="item.number" readonly class="cart-number">
                 <div class="cart-btn" @click="addNum(item,index)">+</div>
               </div>
@@ -41,7 +41,7 @@
       return{
         cartArr: [],
         sum: 0,
-        allSelected: false
+        deleteFlag: false
       }
     },
     watch:{
@@ -66,25 +66,32 @@
     },
     methods:{
       select(item){
-        if(this.allSelected){
-          item.isSelect = true
-        }
         item.isSelect = !item.isSelect;
         if(item.isSelect === true){
           this.sum = Number(this.sum )+ Number((item.price * item.number));
           this.sum = this.floor(this.sum);
         }else{
-          this.sum = this.sum - (item.price * item.number);
+          this.sum = this.sum - item.price * item.number;
           this.sum = this.floor(this.sum);
         }
         console.log(this.sum,item.isSelect);
       },
       deleteItem(item){
-        item.isSelect = false;
-        this.cartArr = this.cartArr.filter(val => val!=item);
-        storage.set('cart',this.cartArr);
+        if(this.deleteFlag){
+          this.cartArr = this.cartArr.filter(val => val!=item);
+          storage.set('cart',this.cartArr);
+          if(item.isSelect === true){
+            this.sum -=item.price*item.number;
+            this.sum = this.floor(this.sum);
+          }
+          item.isSelect = false;
+          this.$emit('delete');
+          console.log(this.sum,item.isSelect);
+        }else{
+          this.$emit('showConfirm',item);
+        }
       },
-      delNum(item,index){
+      subNum(item,index){
         item.number--;
         if(item.isSelect === true){
           if(item.number > 0){
@@ -107,10 +114,16 @@
       },
       floor(val){
         return Math.floor(val * 100) / 100
+      },
+      init(){
+        for(let i in this.cartArr){
+          this.cartArr[i].isSelect = false;
+        }
       }
     },
     created(){
       this.cartArr = this.cartList;
+      this.init();
     }
   }
 </script>
@@ -120,6 +133,13 @@
   .detail{
     width: 100%;
     overflow: auto;
+  }
+
+  .cart-list::after{
+    content: '';
+    display: block;
+    width: 100%;
+    height: 108px;
   }
 
   .cart-item{
